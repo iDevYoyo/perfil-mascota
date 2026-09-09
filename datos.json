@@ -1,0 +1,20 @@
+{
+    "cuco2": {
+        "nombre": "Cuco2 🐾",
+        "mensaje": "Por favor, ayúdame a volver a casa.",
+        "foto": "https://via.placeholder.com/150",
+        "dueno": "Pedro",
+        "telefono": "+56900000000",
+        "ciudad": "Curicó",
+        "nota": "Soy amigable pero estoy asustado."
+    },
+    "dora": {
+        "nombre": "Dora 🐈",
+        "mensaje": "Me perdí, contacta a mi familia.",
+        "foto": "https://via.placeholder.com/150",
+        "dueno": "Pedro",
+        "telefono": "+56900000000",
+        "ciudad": "Curicó",
+        "nota": "No me gusta que me toquen la cola."
+    }
+}
