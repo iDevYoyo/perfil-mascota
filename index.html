@@ -22,7 +22,7 @@
             text-align: center;
             max-width: 320px;
             width: 90%;
-            display: none; /* Se oculta hasta cargar los datos */
+            display: none;
         }
         .foto-mascota {
             width: 120px;
@@ -31,6 +31,7 @@
             object-fit: cover;
             border: 4px solid #FF6B6B;
             margin-bottom: 15px;
+            background-color: #eee; /* Color de fondo por si la imagen tarda en cargar */
         }
         h1 { margin: 0 0 5px; color: #333; font-size: 24px; }
         h2 { margin: 0 0 15px; color: #FF6B6B; font-size: 16px; font-weight: normal; }
@@ -67,6 +68,7 @@
     <h2 id="error-msg">Mascota no encontrada o ID inválido.</h2>
 
     <div class="card" id="perfil-card">
+        <!-- La imagen ahora se carga dinámicamente -->
         <img src="" alt="Foto de la mascota" class="foto-mascota" id="mascota-foto">
         
         <h1 id="mascota-nombre"></h1>
@@ -83,22 +85,22 @@
     </div>
 
     <script>
-        
         const urlParams = new URLSearchParams(window.location.search);
         const mascotaId = urlParams.get('id');
 
         if (!mascotaId) {
             document.getElementById('error-msg').style.display = 'block';
         } else {
-       
             fetch('datos.json')
                 .then(response => response.json())
                 .then(data => {
                     if (data[mascotaId]) {
                         const mascota = data[mascotaId];
                         
-                      
-                        document.getElementById('mascota-foto').src = mascota.foto;
+                        // Lógica automática de la imagen basada en el ID (.jpg por defecto)
+                        document.getElementById('mascota-foto').src = `fotos/${mascotaId}.jpg`;
+                        
+                        // Inyectar el resto de los datos
                         document.getElementById('mascota-nombre').innerText = mascota.nombre;
                         document.getElementById('mascota-mensaje').innerText = mascota.mensaje;
                         document.getElementById('mascota-dueno').innerText = mascota.dueno;
@@ -107,7 +109,6 @@
                         document.getElementById('mascota-nota').innerText = mascota.nota;
                         document.getElementById('mascota-tel-link').href = `tel:${mascota.telefono.replace(/\s+/g, '')}`;
                         
-                      
                         document.getElementById('perfil-card').style.display = 'block';
                     } else {
                         document.getElementById('error-msg').style.display = 'block';
