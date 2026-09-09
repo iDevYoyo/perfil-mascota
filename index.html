@@ -22,6 +22,7 @@
             text-align: center;
             max-width: 320px;
             width: 90%;
+            display: none; /* Se oculta hasta cargar los datos */
         }
         .foto-mascota {
             width: 120px;
@@ -54,27 +55,69 @@
             transition: background 0.3s;
         }
         .btn:active { background: #e55a5a; }
+        #error-msg {
+            color: #333;
+            text-align: center;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <!-- cambio de imagen aqui bro -->
-        <img src="https://via.placeholder.com/150" alt="Foto de la mascota" class="foto-mascota">
-        <!-- nombre del perrito -->
-        <h1>¡Hola! Soy Cuco2 🐾</h1>
-        <h2>Por favor, ayúdame a volver a casa.</h2>
+    <h2 id="error-msg">Mascota no encontrada o ID inválido.</h2>
+
+    <div class="card" id="perfil-card">
+        <img src="" alt="Foto de la mascota" class="foto-mascota" id="mascota-foto">
+        
+        <h1 id="mascota-nombre"></h1>
+        <h2 id="mascota-mensaje"></h2>
         
         <div class="datos">
-            <strong>Dueño:</strong> Pedro<br>
-            <strong>Teléfono:</strong> +56 9 XXXX XXXX<br>
-            <strong>Ciudad:</strong> Curicó<br>
-            <strong>Nota:</strong> Soy amigable pero estoy asustado.
+            <strong>Dueño:</strong> <span id="mascota-dueno"></span><br>
+            <strong>Teléfono:</strong> <span id="mascota-tel-text"></span><br>
+            <strong>Ciudad:</strong> <span id="mascota-ciudad"></span><br>
+            <strong>Nota:</strong> <span id="mascota-nota"></span>
         </div>
 
-        <!-- numero del cliente -->
-        <a href="tel:+56900000000" class="btn">Llamar a mi dueño</a>
+        <a href="#" class="btn" id="mascota-tel-link">Llamar a mi dueño</a>
     </div>
 
+    <script>
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const mascotaId = urlParams.get('id');
+
+        if (!mascotaId) {
+            document.getElementById('error-msg').style.display = 'block';
+        } else {
+       
+            fetch('datos.json')
+                .then(response => response.json())
+                .then(data => {
+                    if (data[mascotaId]) {
+                        const mascota = data[mascotaId];
+                        
+                      
+                        document.getElementById('mascota-foto').src = mascota.foto;
+                        document.getElementById('mascota-nombre').innerText = mascota.nombre;
+                        document.getElementById('mascota-mensaje').innerText = mascota.mensaje;
+                        document.getElementById('mascota-dueno').innerText = mascota.dueno;
+                        document.getElementById('mascota-tel-text').innerText = mascota.telefono;
+                        document.getElementById('mascota-ciudad').innerText = mascota.ciudad;
+                        document.getElementById('mascota-nota').innerText = mascota.nota;
+                        document.getElementById('mascota-tel-link').href = `tel:${mascota.telefono.replace(/\s+/g, '')}`;
+                        
+                      
+                        document.getElementById('perfil-card').style.display = 'block';
+                    } else {
+                        document.getElementById('error-msg').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar la base de datos:', error);
+                    document.getElementById('error-msg').style.display = 'block';
+                });
+        }
+    </script>
 </body>
 </html>
