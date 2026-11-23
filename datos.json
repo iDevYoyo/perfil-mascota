@@ -14,7 +14,7 @@
         "telefono": "+56900000000",
         "ciudad": "Curicó",
         "nota": "Soy amigable, me gustan los pajaros."
-    },    
+    },
     "dora": {
         "nombre": "Dora 🐈",
         "mensaje": "Me perdí, contacta a mi familia.",
@@ -22,5 +22,23 @@
         "telefono": "+56900000000",
         "ciudad": "Curicó",
         "nota": "No me gusta que me toquen la cola."
+    },
+    "demo": {
+        "nombre": "Demo 🐶",
+        "especie": "Perro",
+        "raza": "Mestizo",
+        "color": "Café con blanco",
+        "edad": "3 años",
+        "mensaje": "Me perdí, ayúdame a volver a casa.",
+        "dueno": "Tapreview",
+        "telefono": "+56900000000",
+        "ciudad": "Curicó",
+        "nota": "Soy amigable, pero me asustan los ruidos fuertes.",
+        "perdido": true,
+        "recompensa": "$30.000",
+        "alergias": "Pollo",
+        "medicamentos": "Ninguno",
+        "veterinaria": "Clínica Veterinaria Ejemplo",
+        "veterinaria_telefono": "+56900000000"
     }
 }
