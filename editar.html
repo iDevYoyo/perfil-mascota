@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#FF6B6B">
+    <title>Editar perfil · Tapreview</title>
+    <style>
+        :root {
+            --principal: #FF6B6B;
+            --principal-oscuro: #e55a5a;
+            --texto: #2b2b2b;
+            --suave: #6b6b6b;
+            --fondo: #f4f4f9;
+            --caja: #f8f9fa;
+            --borde: #e3e3ea;
+            --alerta: #d62828;
+            --ok: #2a9d5c;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--fondo);
+            color: var(--texto);
+            margin: 0;
+            padding: 24px 16px 48px;
+            display: flex;
+            justify-content: center;
+        }
+        main { width: 100%; max-width: 420px; }
+        .card {
+            background: #fff;
+            border-radius: 22px;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+            padding: 24px 20px;
+            margin-bottom: 14px;
+        }
+        h1 { font-size: 22px; margin: 0 0 6px; }
+        h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--suave); margin: 22px 0 10px; }
+        p { color: var(--suave); line-height: 1.5; margin: 0 0 16px; font-size: 15px; }
+        label { display: block; font-size: 14px; font-weight: 600; margin: 0 0 6px; }
+        input[type="text"], input[type="email"], input[type="tel"], textarea {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1.5px solid var(--borde);
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            background: #fff;
+            color: var(--texto);
+            margin-bottom: 14px;
+        }
+        textarea { min-height: 76px; resize: vertical; }
+        input:focus, textarea:focus { outline: none; border-color: var(--principal); }
+        .ayuda { font-size: 12px; color: var(--suave); margin: -10px 0 14px; }
+        .btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; border: 0; text-decoration: none;
+            padding: 15px 16px; border-radius: 30px;
+            font-weight: 700; font-size: 16px; font-family: inherit;
+            cursor: pointer; background: var(--principal); color: #fff;
+        }
+        .btn:active { background: var(--principal-oscuro); }
+        .btn[disabled] { opacity: 0.6; cursor: wait; }
+        .btn-sec { background: #fff; color: var(--texto); border: 1.5px solid var(--borde); }
+        .btn-sec:active { background: var(--caja); }
+        .btn-link { background: none; color: var(--suave); padding: 10px; font-weight: 600; font-size: 14px; }
+        .acciones { display: grid; gap: 10px; margin-top: 8px; }
+
+        .mascota {
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 0; border-top: 1px solid var(--borde);
+        }
+        .mascota:first-of-type { border-top: 0; }
+        .mascota .info { flex: 1; min-width: 0; }
+        .mascota strong { display: block; font-size: 17px; }
+        .pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 9px; border-radius: 20px; margin-top: 4px; }
+        .pill.ok { background: #e6f6ed; color: var(--ok); }
+        .pill.perdido { background: #fde8e8; color: var(--alerta); }
+        .mascota .btn { width: auto; padding: 10px 16px; font-size: 14px; }
+
+        /* Interruptor de modo perdido */
+        .perdido-caja {
+            border: 2px solid var(--borde);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 8px;
+            display: flex; align-items: center; gap: 14px;
+            cursor: pointer;
+        }
+        .perdido-caja.activo { border-color: var(--alerta); background: #fff5f5; }
+        .perdido-caja .texto { flex: 1; }
+        .perdido-caja strong { display: block; font-size: 16px; }
+        .perdido-caja span { font-size: 13px; color: var(--suave); }
+        .switch { position: relative; width: 52px; height: 30px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; inset: 0; background: #ccc; border-radius: 30px; transition: 0.2s; }
+        .slider::before {
+            content: ""; position: absolute; width: 24px; height: 24px; left: 3px; top: 3px;
+            background: #fff; border-radius: 50%; transition: 0.2s;
+        }
+        .switch input:checked + .slider { background: var(--alerta); }
+        .switch input:checked + .slider::before { transform: translateX(22px); }
+        .switch input:focus-visible + .slider { outline: 3px solid #ffb3b3; }
+
+        .aviso { border-radius: 12px; padding: 12px 14px; font-size: 14px; margin-bottom: 14px; display: none; }
+        .aviso.ok { background: #e6f6ed; color: #1d6b40; display: block; }
+        .aviso.error { background: #fde8e8; color: #9b1c1c; display: block; }
+        .oculto { display: none !important; }
+        .usuario { font-size: 13px; color: var(--suave); text-align: center; margin-top: 4px; }
+    </style>
+</head>
+<body>
+<main>
+
+    <!-- Sin configurar -->
+    <section class="card oculto" id="vista-sin-config">
+        <h1>Falta configurar</h1>
+        <p>Completa <code>config.js</code> con la Project URL y la publishable key de Supabase.</p>
+    </section>
+
+    <!-- Entrar -->
+    <section class="card oculto" id="vista-login">
+        <h1>Editar el perfil de tu mascota 🐾</h1>
+        <p>Escribe el correo con el que compraste la medalla. Te mandamos un link para entrar, sin contraseña.</p>
+        <div class="aviso" id="aviso-login"></div>
+        <form id="form-login">
+            <label for="email">Tu correo</label>
+            <input type="email" id="email" required autocomplete="email" inputmode="email" placeholder="nombre@correo.cl">
+            <button class="btn" type="submit" id="btn-login">Enviarme el link</button>
+        </form>
+    </section>
+
+    <!-- Lista de mascotas -->
+    <section class="card oculto" id="vista-lista">
+        <h1>Tus mascotas</h1>
+        <div class="aviso" id="aviso-lista"></div>
+        <div id="lista"></div>
+        <p class="oculto" id="lista-vacia">No encontramos mascotas asociadas a este correo. Si compraste una medalla, escríbenos para asociarla.</p>
+    </section>
+
+    <!-- Editar -->
+    <section class="card oculto" id="vista-editar">
+        <button class="btn btn-link" type="button" id="btn-volver" style="width:auto;padding:0 0 12px;">← Volver</button>
+        <h1 id="editar-titulo">Editar</h1>
+        <div class="aviso" id="aviso-editar"></div>
+
+        <form id="form-editar" novalidate>
+            <label class="perdido-caja" id="perdido-caja" for="f-perdido">
+                <div class="texto">
+                    <strong>Modo perdido</strong>
+                    <span id="perdido-texto">Actívalo si tu mascota se perdió: el perfil se pone rojo y avisa que la están buscando.</span>
+                </div>
+                <div class="switch">
+                    <input type="checkbox" id="f-perdido" name="perdido">
+                    <span class="slider"></span>
+                </div>
+            </label>
+            <div id="campo-recompensa" class="oculto" style="margin-top:12px;">
+                <label for="f-recompensa">Recompensa (opcional)</label>
+                <input type="text" id="f-recompensa" name="recompensa" placeholder="$30.000">
+            </div>
+
+            <h2>Mascota</h2>
+            <label for="f-nombre">Nombre</label>
+            <input type="text" id="f-nombre" name="nombre" required maxlength="60">
+            <label for="f-mensaje">Mensaje para quien la encuentre</label>
+            <input type="text" id="f-mensaje" name="mensaje" maxlength="120" placeholder="Por favor, ayúdame a volver a casa.">
+            <label for="f-especie">Especie</label>
+            <input type="text" id="f-especie" name="especie" maxlength="40" placeholder="Perro, gato…">
+            <label for="f-raza">Raza</label>
+            <input type="text" id="f-raza" name="raza" maxlength="60">
+            <label for="f-color">Color</label>
+            <input type="text" id="f-color" name="color" maxlength="60">
+            <label for="f-edad">Edad</label>
+            <input type="text" id="f-edad" name="edad" maxlength="30" placeholder="3 años">
+            <label for="f-nota">Sobre mí</label>
+            <textarea id="f-nota" name="nota" maxlength="300" placeholder="Soy amigable, me asustan los ruidos fuertes…"></textarea>
+
+            <h2>Contacto</h2>
+            <label for="f-dueno">Nombre del dueño/a</label>
+            <input type="text" id="f-dueno" name="dueno" maxlength="60">
+            <label for="f-telefono">Teléfono</label>
+            <input type="tel" id="f-telefono" name="telefono" maxlength="20" placeholder="+56912345678">
+            <label for="f-whatsapp">WhatsApp (si es distinto)</label>
+            <input type="tel" id="f-whatsapp" name="whatsapp" maxlength="20" placeholder="+56912345678">
+            <p class="ayuda">Si lo dejas vacío, usamos el teléfono.</p>
+            <label for="f-ciudad">Ciudad</label>
+            <input type="text" id="f-ciudad" name="ciudad" maxlength="60">
+
+            <h2>Salud</h2>
+            <label for="f-alergias">Alergias</label>
+            <input type="text" id="f-alergias" name="alergias" maxlength="120">
+            <label for="f-medicamentos">Medicamentos</label>
+            <input type="text" id="f-medicamentos" name="medicamentos" maxlength="120">
+            <label for="f-veterinaria">Veterinaria</label>
+            <input type="text" id="f-veterinaria" name="veterinaria" maxlength="80">
+            <label for="f-veterinaria_telefono">Teléfono de la veterinaria</label>
+            <input type="tel" id="f-veterinaria_telefono" name="veterinaria_telefono" maxlength="20">
+
+            <div class="acciones">
+                <button class="btn" type="submit" id="btn-guardar">Guardar cambios</button>
+                <a class="btn btn-sec" id="btn-ver" target="_blank" rel="noopener">Ver perfil público</a>
+            </div>
+        </form>
+    </section>
+
+    <div class="oculto" id="pie-sesion">
+        <p class="usuario" id="usuario"></p>
+        <button class="btn btn-link" type="button" id="btn-salir">Cerrar sesión</button>
+    </div>
+</main>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js"></script>
+<script>
+    const $ = (id) => document.getElementById(id);
+    const CAMPOS_TEXTO = [
+        'nombre', 'mensaje', 'especie', 'raza', 'color', 'edad', 'nota',
+        'dueno', 'telefono', 'whatsapp', 'ciudad',
+        'alergias', 'medicamentos', 'veterinaria', 'veterinaria_telefono', 'recompensa'
+    ];
+    const VISTAS = ['vista-sin-config', 'vista-login', 'vista-lista', 'vista-editar'];
+
+    let sb = null;
+    let mascotas = [];
+    let actual = null;
+
+    function mostrar(vista) {
+        VISTAS.forEach((v) => $(v).classList.toggle('oculto', v !== vista));
+        $('pie-sesion').classList.toggle('oculto', vista === 'vista-login' || vista === 'vista-sin-config');
+        window.scrollTo(0, 0);
+    }
+
+    function aviso(id, tipo, texto) {
+        const el = $(id);
+        el.className = 'aviso' + (tipo ? ' ' + tipo : '');
+        el.textContent = texto || '';
+    }
+
+    function traducirError(err) {
+        const msg = (err && err.message) || String(err);
+        if (/rate limit|too many|seconds/i.test(msg)) return 'Pediste muchos links seguidos. Espera unos minutos e intenta de nuevo.';
+        if (/invalid.*email|email.*invalid/i.test(msg)) return 'Ese correo no parece válido.';
+        if (/JWT|expired|session/i.test(msg)) return 'Tu sesión expiró. Vuelve a entrar.';
+        if (/failed to fetch|network/i.test(msg)) return 'Sin conexión. Revisa tu internet.';
+        return 'Algo salió mal: ' + msg;
+    }
+
+    function urlPerfil(id) {
+        return new URL(`./?id=${encodeURIComponent(id)}`, window.location.href).href;
+    }
+
+    // ---------- Inicio ----------
+    const c = window.TAPREVIEW || {};
+    if (!c.supabaseUrl || !c.supabaseKey || !window.supabase) {
+        mostrar('vista-sin-config');
+    } else {
+        sb = window.supabase.createClient(c.supabaseUrl, c.supabaseKey, {
+            auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true }
+        });
+        sb.auth.onAuthStateChange((evento, sesion) => {
+            // Se ejecuta fuera del callback para no bloquear el cliente de auth
+            setTimeout(() => alCambiarSesion(sesion), 0);
+        });
+    }
+
+    let usuarioActual = null;
+    async function alCambiarSesion(sesion) {
+        const email = sesion && sesion.user ? sesion.user.email : null;
+        if (!email) {
+            usuarioActual = null;
+            mostrar('vista-login');
+            return;
+        }
+        if (usuarioActual === email) return; // ej: renovación del token, no recargar
+        usuarioActual = email;
+        $('usuario').textContent = 'Entraste como ' + email;
+        // Limpia el token de la barra de direcciones
+        if (window.location.hash.includes('access_token')) {
+            history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+        await cargarLista();
+    }
+
+    // ---------- Entrar ----------
+    $('form-login').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = $('email').value.trim();
+        if (!email) return;
+        const btn = $('btn-login');
+        btn.disabled = true;
+        btn.textContent = 'Enviando…';
+        aviso('aviso-login');
+        const redirect = window.location.href.split('#')[0].split('?')[0];
+        const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: redirect } });
+        btn.disabled = false;
+        btn.textContent = 'Enviarme el link';
+        if (error) {
+            aviso('aviso-login', 'error', traducirError(error));
+        } else {
+            aviso('aviso-login', 'ok', `Listo. Revisa ${email} (también en spam) y abre el link desde este mismo teléfono.`);
+        }
+    });
+
+    $('btn-salir').addEventListener('click', async () => {
+        await sb.auth.signOut();
+        mostrar('vista-login');
+    });
+
+    // ---------- Lista ----------
+    async function cargarLista() {
+        mostrar('vista-lista');
+        aviso('aviso-lista');
+        $('lista').innerHTML = '<p>Cargando…</p>';
+        const { data, error } = await sb.from('mascotas').select('*').order('nombre');
+        if (error) {
+            $('lista').innerHTML = '';
+            aviso('aviso-lista', 'error', traducirError(error));
+            return;
+        }
+        mascotas = data || [];
+        pintarLista();
+    }
+
+    function pintarLista() {
+        const lista = $('lista');
+        lista.innerHTML = '';
+        $('lista-vacia').classList.toggle('oculto', mascotas.length > 0);
+        mascotas.forEach((m) => {
+            const fila = document.createElement('div');
+            fila.className = 'mascota';
+
+            const info = document.createElement('div');
+            info.className = 'info';
+            const nombre = document.createElement('strong');
+            nombre.textContent = m.nombre;
+            const pill = document.createElement('span');
+            pill.className = 'pill ' + (m.perdido ? 'perdido' : 'ok');
+            pill.textContent = m.perdido ? '🚨 Perdido' : 'En casa';
+            info.append(nombre, pill);
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-sec';
+            btn.textContent = 'Editar';
+            btn.addEventListener('click', () => abrirEditor(m));
+
+            fila.append(info, btn);
+            lista.append(fila);
+        });
+    }
+
+    // ---------- Editar ----------
+    function actualizarCajaPerdido() {
+        const on = $('f-perdido').checked;
+        $('perdido-caja').classList.toggle('activo', on);
+        $('campo-recompensa').classList.toggle('oculto', !on);
+        $('perdido-texto').textContent = on
+            ? 'ACTIVADO: el perfil muestra "¡ESTOY PERDIDO!". Desactívalo cuando vuelva a casa.'
+            : 'Actívalo si tu mascota se perdió: el perfil se pone rojo y avisa que la están buscando.';
+    }
+
+    function abrirEditor(m) {
+        actual = m;
+        aviso('aviso-editar');
+        $('editar-titulo').textContent = 'Editar a ' + m.nombre;
+        CAMPOS_TEXTO.forEach((campo) => { $('f-' + campo).value = m[campo] || ''; });
+        $('f-perdido').checked = !!m.perdido;
+        actualizarCajaPerdido();
+        $('btn-ver').href = urlPerfil(m.id);
+        mostrar('vista-editar');
+    }
+
+    $('f-perdido').addEventListener('change', actualizarCajaPerdido);
+    $('btn-volver').addEventListener('click', () => { pintarLista(); mostrar('vista-lista'); });
+
+    $('form-editar').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!actual) return;
+        const cambios = { perdido: $('f-perdido').checked };
+        CAMPOS_TEXTO.forEach((campo) => {
+            const v = $('f-' + campo).value.trim();
+            cambios[campo] = v === '' ? null : v;
+        });
+        if (!cambios.nombre) {
+            aviso('aviso-editar', 'error', 'El nombre no puede quedar vacío.');
+            window.scrollTo(0, 0);
+            return;
+        }
+
+        const btn = $('btn-guardar');
+        btn.disabled = true;
+        btn.textContent = 'Guardando…';
+        const { data, error } = await sb.from('mascotas').update(cambios).eq('id', actual.id).select().single();
+        btn.disabled = false;
+        btn.textContent = 'Guardar cambios';
+
+        if (error) {
+            aviso('aviso-editar', 'error', traducirError(error));
+        } else {
+            const i = mascotas.findIndex((x) => x.id === actual.id);
+            if (i >= 0) mascotas[i] = data;
+            actual = data;
+            $('editar-titulo').textContent = 'Editar a ' + data.nombre;
+            aviso('aviso-editar', 'ok', data.perdido
+                ? '✅ Guardado. Tu mascota aparece como PERDIDA en su perfil.'
+                : '✅ Guardado. Los cambios ya se ven en el perfil.');
+        }
+        window.scrollTo(0, 0);
+    });
+</script>
+</body>
+</html>

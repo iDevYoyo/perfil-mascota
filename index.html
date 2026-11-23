@@ -203,9 +203,10 @@
         </div>
     </section>
 
-    <p class="pie oculto" id="pie">Medalla inteligente · Tapreview</p>
+    <p class="pie oculto" id="pie">Medalla inteligente · Tapreview · <a href="editar.html">Soy el dueño</a></p>
 </main>
 
+<script src="config.js"></script>
 <script>
     const $ = (id) => document.getElementById(id);
 
@@ -243,13 +244,38 @@
     const params = new URLSearchParams(window.location.search);
     const mascotaId = (params.get('id') || '').trim().toLowerCase();
 
+    // Busca la mascota en Supabase; si no está ahí (o no está configurado), usa datos.json
+    async function cargarMascota(id) {
+        const c = window.TAPREVIEW || {};
+        if (c.supabaseUrl && c.supabaseKey) {
+            try {
+                const r = await fetch(`${c.supabaseUrl}/rest/v1/rpc/perfil_publico`, {
+                    method: 'POST',
+                    headers: { apikey: c.supabaseKey, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ p_id: id })
+                });
+                if (r.ok) {
+                    const m = await r.json();
+                    if (m) return m;
+                } else {
+                    console.error('Supabase respondió', r.status, await r.text());
+                }
+            } catch (e) {
+                console.error('No se pudo consultar Supabase:', e);
+            }
+        }
+        const r = await fetch('datos.json', { cache: 'no-store' });
+        if (r.status === 404) return null;
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const data = await r.json();
+        return data[id] || null;
+    }
+
     if (!mascotaId) {
         mostrarError('Perfil no encontrado', 'Este enlace no tiene el código de la mascota.');
     } else {
-        fetch('datos.json', { cache: 'no-store' })
-            .then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-            .then((data) => {
-                const m = data[mascotaId];
+        cargarMascota(mascotaId)
+            .then((m) => {
                 if (!m) {
                     mostrarError('Perfil no encontrado', 'Revisa que el enlace o la medalla estén bien grabados.');
                     return;
@@ -257,7 +283,7 @@
                 pintarPerfil(m);
             })
             .catch((err) => {
-                console.error('Error al cargar datos.json:', err);
+                console.error('Error al cargar el perfil:', err);
                 mostrarError('No pudimos cargar el perfil', 'Revisa tu conexión e intenta de nuevo.');
             });
     }

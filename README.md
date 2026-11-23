@@ -29,3 +29,19 @@ Página que se abre al tocar la medalla NFC o escanear su QR: `https://idevyoyo.
 Ver la entrada `demo` como ejemplo: `?id=demo`.
 
 > Ojo: `datos.json` es público. Cualquiera puede descargarlo con los datos de todos los dueños.
+> Por eso los perfiles se están pasando a Supabase (ver abajo). Cuando estén todos allá, se vacía `datos.json`.
+
+## Supabase (datos privados + el dueño edita su perfil)
+
+- `supabase/schema.sql`: crea la tabla `mascotas`, la seguridad y la función `perfil_publico`. Se pega en **SQL Editor → Run**.
+- `config.js`: Project URL y publishable/anon key (públicas por diseño). Nunca la `service_role`/secret key.
+- `index.html` busca primero en Supabase y, si no encuentra, en `datos.json`.
+- `editar.html`: el dueño entra con su correo (link mágico, sin contraseña), ve **sus** mascotas y puede activar el modo perdido.
+
+**Agregar una mascota nueva:** Supabase → Table Editor → `mascotas` → Insert row. Llena `id` (minúsculas, números o guiones, ej. `zuky-7k2m`), `owner_email` (correo del comprador) y `nombre`. Lo demás lo puede completar el dueño.
+
+**Seguridad:** nadie puede listar la tabla. El público solo ve una mascota si sabe su `id` y nunca ve el correo del dueño. Cada dueño solo ve y edita las suyas, y no puede cambiar el `id`, el correo ni la foto.
+
+**Configuración en Supabase → Authentication → URL Configuration:**
+- Site URL: `https://idevyoyo.github.io/perfil-mascota/`
+- Redirect URLs: `https://idevyoyo.github.io/perfil-mascota/**`
